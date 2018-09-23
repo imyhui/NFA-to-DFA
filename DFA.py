@@ -71,5 +71,32 @@ def get_divide(DFA):
     return P
 
 def min_dfa(DFA):
+    '''
+    最小化DFA函数实现
+    '''
+    # 获取合并数组
     divide = get_divide(DFA)
-    return divide
+    to_merge = [i for i in divide if len(i)>1]
+    
+    for m in to_merge:
+        save = min(m)
+        to_rm = set(m) - set(save)
+        for i in to_rm:
+            # 状态集合删除
+            DFA['k'].remove(i)
+            # 转换函数删除
+            for e in DFA['e']:
+                for s in DFA['f']:
+                    if e in DFA['f'][s]:
+                        if DFA['f'][s][e] ==  i:
+                            DFA['f'][s][e] = save
+            if i in DFA['f']:
+                for e in DFA['f'][i]:
+                    DFA['f'][save][e] =  DFA['f'][i][e]
+            DFA['f'].pop(i)
+            # 初态与态删除
+            if i in DFA['s']:
+                DFA['s'].remove(i)
+            if i in DFA['z']:
+                DFA['z'].remove(i)
+    return DFA
