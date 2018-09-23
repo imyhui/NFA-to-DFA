@@ -16,9 +16,9 @@ def init_dfa(NFA,first):
 
 def has_intersection(DFA,NFA,T,m,value):
     '''
-    判断是否与初态集或终态集有交集，如果有，添加到DFA的对应集合中
+    判断是否与终态集有交集，如果有，添加到DFA的对应集合中
     '''
-    if not len(set(T) & set(NFA[m])) == 0:
+    if (not len(set(T) & set(NFA[m])) == 0) and value not in DFA[m]:
         DFA[m].append(value)
 
 def get_dfa():
@@ -94,7 +94,7 @@ def min_dfa(DFA):
                 for e in DFA['f'][i]:
                     DFA['f'][save][e] =  DFA['f'][i][e]
             DFA['f'].pop(i)
-            # 初态与态删除
+            # 初态与终态删除
             if i in DFA['s']:
                 DFA['s'].remove(i)
             if i in DFA['z']:

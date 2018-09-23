@@ -4,6 +4,7 @@ import DFA as dfa
 
 def main():
   DFA = nfa.nfa_to_dfa()
+  print(DFA)
   min_DFA = dfa.min_dfa(DFA)
   print(min_DFA)
 
