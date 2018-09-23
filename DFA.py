@@ -22,5 +22,54 @@ def has_intersection(DFA,NFA,T,m,value):
         DFA[m].append(value)
 
 def get_dfa():
+    '''
+    获取DFA
+    '''
     DFA ={'k': ['0', '1', '2', '3', '4'], 'e': ['a', 'b'], 'f': {'0': {'a': '1', 'b': '2'}, '1': {'a': '1', 'b': '3'}, '2': {'a': '1', 'b': '2'}, '3': {'a': '1', 'b': '4'}, '4': {'a': '1', 'b': '2'}}, 's': ['0'], 'z': ['4']}
     return DFA
+
+def leads_to_status(DFA,statuses,e):
+    '''
+    找出DFA的状态中，经过一条e弧结果在statuses中的状态
+    '''
+    res = set()
+    for s in DFA['f']:
+        if e in DFA['f'][s]:
+            if str(DFA['f'][s][e]) in statuses:
+                res.add(s)
+    return res
+def get_divide(DFA):
+    '''
+    获取最小化DFA划分，详见
+    [Hopcroft's algorithm](https://en.wikipedia.org/wiki/DFA_minimization)
+    '''
+    final = set(DFA['z'])
+    no_final = set(DFA['k']) - final
+    P = [final,no_final]
+    W = [final]
+    while len(W):
+        A = W[0]
+        W.remove(A)
+        for e in DFA['e']:
+            X = leads_to_status(DFA, A, e)
+            for Y in P:
+                S1 = X & Y
+                S2 = Y - X
+                if len(S1) and len(S2):
+                    P.remove(Y)
+                    P.append(S1)
+                    P.append(S2)
+                    if Y in W:
+                        W.remove(Y)
+                        W.append(S1)
+                        W.append(S2)
+                    else:
+                        if len(S1) <= len(S2):
+                            W.append(S1)
+                        else:
+                            W.append(S2)
+    return P
+
+def min_dfa(DFA):
+    divide = get_divide(DFA)
+    return divide
