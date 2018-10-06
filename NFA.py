@@ -40,29 +40,31 @@ def ε_closure(I):
   '''
   状态集合I的ε-闭包
   '''
-  return get_closure(I,'ε',set())
+  return get_closure(I,set())
 
 def move(I, e):
   '''
   集合I的e弧转换
   '''
-  return get_closure(I,e,set())
+  res = set()
+  for s in I:
+    if s in NFA['f']:
+        change = NFA['f'][s]
+        if e in change:
+              res |= set(change[e])
+  return res
 
-def get_closure(I,e,res):
+def get_closure(I,res):
   '''
   递归查找
   '''
   for s in I:
     tmp = set()
-    if e == 'ε':
-      tmp.add(s)
+    tmp.add(s)
     if s in NFA['f']:
         change = NFA['f'][s]
-        if e in change:
-            if e == 'ε':
-              tmp |= get_closure(change[e],e,res)
-            else:
-              tmp = set(change[e])
+        if 'ε' in change:
+              tmp |= get_closure(change['ε'], res)
     res |= tmp
   return res
 
